@@ -41,18 +41,14 @@ pipeline {
         stage('Build Application') {
             steps {
                 echo "Building app..."
-                sh '''
-                    python -m compileall .
-                '''
+                sh 'python -m compileall .'
             }
         }
 
         stage('Deploy (Local Simulation)') {
             steps {
                 echo "Simulating deployment..."
-                sh '''
-                    echo "Flask app would be deployed here (Docker image build, push, etc.)"
-                '''
+                sh 'echo "Flask app would be deployed here (Docker image build, push, etc.)"'
             }
         }
     }
@@ -66,7 +62,13 @@ pipeline {
         }
         always {
             echo "Cleaning up workspace..."
-            cleanWs()
+            script {
+                if (env.WORKSPACE) {
+                    cleanWs()
+                } else {
+                    echo "No workspace context found to clean."
+                }
+            }
         }
     }
 }
