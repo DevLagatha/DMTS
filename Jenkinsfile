@@ -2,6 +2,28 @@ pipeline {
     agent {
         kubernetes {
             inheritFrom 'python-agent'
+            gentContainer 'jnlp'
+            cloud 'Kubernetes'
+            namespace 'cboc'
+            yaml '''
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: python
+    image: python:3.9-slim
+    command: ['cat']
+    tty: true
+  - name: oc
+    image: quay.io/openshift/origin-cli:4.12
+    command: ['cat']
+    tty: true
+  - name: docker
+    image: docker:24-cli     
+    command: ['cat']
+    tty: true
+    
+'''
         }
     }
 
@@ -41,6 +63,7 @@ pipeline {
         stage('Build Application') {
             steps {
                 echo "Building app..."
+                oc start-build flask-app --from-dir=. --follow || echo "Build failed, but continuing..."
                 sh 'python -m compileall .'
             }
         }
