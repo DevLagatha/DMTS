@@ -1,7 +1,7 @@
 pipeline {
     agent {
         kubernetes {
-            label 'simple-test'
+            inheritFrom 'python-agent'
         }
     }
 
